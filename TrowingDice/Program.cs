@@ -11,16 +11,12 @@ namespace ThrowingDice
 	{
 		static void Main(string[] args)
 		{
-			Dice dice = new Dice();
-
-			for (int i = 0; i < 20; i++)
-			{
-				Console.WriteLine(dice.ThrowDice());
-
-			}
+			Gamelogic gamelogic = new Gamelogic();
 
 			Console.WriteLine("Hello, World!");
 		}
+
+	
 	}
 }
 
