@@ -13,6 +13,9 @@ namespace TrowingDice
 		string _START_DEPOSIT = "Start_Deposit";
 		string _DEPOSIT_ERROR = "Deposit_Error";
 		string _CURRENT_BALANCE = "Current_Balance";
+		string _START_BET = "Start_Bet";
+		string _BET_ERROR_INT = "Bet_Error_Int";
+		string _BET_BALANCE_ERROR_ = "Bet_Balance_Error";
 
 		Player player;
 
@@ -20,6 +23,7 @@ namespace TrowingDice
 		Dice[] npcDice;
 
 		bool playAnotherGame;
+		bool betRegistered; 
 
 
 		// This method will handel all game logic 
@@ -29,7 +33,14 @@ namespace TrowingDice
 			
 			// Regex pattern, only positive integers
 			string integerPattern = @"^\d+$";
+			string oneTwoThreePattern = @"^[1-3]+$";
 
+			Dictionary<int, int> betValues = new Dictionary<int, int>
+			{
+				{1, 100},
+				{2, 300},
+				{3, 500}
+			};
 
 			player = new Player();
 
@@ -42,6 +53,7 @@ namespace TrowingDice
 			npcDice[1] = new Dice();		
 			
 			playAnotherGame = true;
+			betRegistered = false; 
 
 			consoleMessages.DisplayMessage(_WELCOME);
 
@@ -70,6 +82,34 @@ namespace TrowingDice
 				// Displays current balance to player
 				consoleMessages.DisplayMessage(_CURRENT_BALANCE, player.GetDeposit());
 
+				// Register player bet
+				consoleMessages.DisplayMessage(_START_BET);
+
+				while (!betRegistered)
+				{
+					// Get player bet
+					string inputBet = Console.ReadLine();
+
+					// Bet error handeling
+					// Integer outside of range
+					if (!Regex.IsMatch(inputBet, oneTwoThreePattern))
+					{
+						consoleMessages.DisplayMessage(_BET_ERROR_INT);
+						continue;
+					}
+
+					int tempBetValue = betValues[int.Parse(inputBet)];
+					
+					// Bet exceeds current founds 
+					if (tempBetValue > player.GetDeposit())
+					{
+						consoleMessages.DisplayMessage(_BET_BALANCE_ERROR_);
+						continue;
+					}
+
+					player.SetBet(tempBetValue);
+					player.SetDeposit(player.GetDeposit() - tempBetValue);
+				}
 				GameRound(playerDice, npcDice);
 			}
 			

@@ -23,9 +23,10 @@ namespace TrowingDice
 								"The best out of three rounds determines the winner.\n" },
 				{ "Start_Deposit", "How much money do you want do deposit? \nRegister a value between 100 - 5000kr.\n" },
 				{ "Deposit_Error", "Only integer values between 100 and 5000 are permited! \nTry again!\n" },
-				{ "Current_Balance", "kr in account!" },
-				{ "Start_Bet", "What will you bet? \n 1: 100kr \n 2: 200kr \n 3: 500kr" },
-				{ "Bet_Error", "Provide an integer between 1 and 3!" }
+				{ "Current_Balance", "kr in account! \n" },
+				{ "Start_Bet", "How much will you bet? \n 1: 100kr \n 2: 300kr \n 3: 500kr" },
+				{ "Bet_Error_Int", "Provide an integer between 1 and 3!" },
+				{ "Bet_Balance_Error", "Bet exceeds your current funds. Please try again" }
 			};
 		}
 
