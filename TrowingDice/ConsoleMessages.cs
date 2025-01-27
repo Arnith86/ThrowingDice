@@ -18,11 +18,12 @@ namespace TrowingDice
 		{
 			messages = new Dictionary<string, string>
 			{
-				{ "Welcome ", "The game involves the user and the computer rolling two dice at a time for three rounds. " +
-								"The player who rolls the highest individual die in a round wins that round. " +
-								"The best out of three rounds determines the winner." },
-				{ "Start_Deposit", "How much money do you want do deposit? \n 5000kr is the upper limit!" },
-				{ "Deposit_Error", "Only integer values between 100 and 5000 are permited!" },
+				{ "Welcome", "The game involves the player and the computer rolling two dice at a time for three rounds. \n" +
+								"The player who rolls the highest individual die in a round wins that round. \n" +
+								"The best out of three rounds determines the winner.\n" },
+				{ "Start_Deposit", "How much money do you want do deposit? \nRegister a value between 100 - 5000kr.\n" },
+				{ "Deposit_Error", "Only integer values between 100 and 5000 are permited! \nTry again!\n" },
+				{ "Current_Balance", "kr in account!" },
 				{ "Start_Bet", "What will you bet? \n 1: 100kr \n 2: 200kr \n 3: 500kr" },
 				{ "Bet_Error", "Provide an integer between 1 and 3!" }
 			};
@@ -51,9 +52,16 @@ namespace TrowingDice
 			return $"Message for key '{key}' not found.";
 		}
 
-		public void DisplayMessage(string key)
+		public void DisplayMessage(string key, int value = -1)
 		{
-			Console.WriteLine(GetMessage(key));
+			if (value == -1)
+			{
+				Console.WriteLine(GetMessage(key));
+			}
+			else
+			{
+				Console.WriteLine(value + GetMessage(key));
+			}
 		}
 	}
 }

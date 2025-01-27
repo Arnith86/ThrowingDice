@@ -20,22 +20,22 @@ namespace TrowingDice
 			bet = 0;
 		}
 
-		public void setBet(int bet)
+		public void SetBet(int bet)
 		{
 			this.bet = bet;
 		}
 
-		public int getBet() 
+		public int GetBet() 
 		{
 			return this.bet;
 		}
 
-		public void setDeposit(int deposit) 
+		public void SetDeposit(int deposit) 
 		{
 			this.deposit = deposit;
 		}
 
-		public int getDeposit() 
+		public int GetDeposit() 
 		{
 			return this.deposit;
 		}

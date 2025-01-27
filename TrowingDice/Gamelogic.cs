@@ -9,6 +9,10 @@ namespace TrowingDice
 {
 	class Gamelogic
 	{
+		string _WELCOME = "Welcome";
+		string _START_DEPOSIT = "Start_Deposit";
+		string _DEPOSIT_ERROR = "Deposit_Error";
+		string _CURRENT_BALANCE = "Current_Balance";
 
 		Player player;
 
@@ -21,46 +25,51 @@ namespace TrowingDice
 		// This method will handel all game logic 
 		public Gamelogic() 
 		{
-
+			ConsoleMessages consoleMessages = ConsoleMessages.Instance;
+			
 			// Regex pattern, only positive integers
 			string integerPattern = @"^\d+$";
 
 
 			player = new Player();
 
+			// Player and Npc dice hands
 			playerDice = new Dice[2];
 			playerDice[0] = new Dice();
 			playerDice[1] = new Dice();
-
 			npcDice = new Dice[2];
 			npcDice[0] = new Dice();
 			npcDice[1] = new Dice();		
 			
 			playAnotherGame = true;
 
+			consoleMessages.DisplayMessage(_WELCOME);
 
 			while (playAnotherGame) 
 			{
-				if (player.getDeposit() == 0) 
-				{
-					Console.WriteLine("How much money do you want do deposit? \n " +
-										"5000kr is the upper limit! "); 
-					
-					string inputedDeposit = Console.ReadLine();
-					
-					if (!(Regex.IsMatch(inputedDeposit, integerPattern)))
-					{
-						Console.WriteLine("Only integer values between 100 and 5000 are permited!");
-					}
+				if (player.GetDeposit() == 0) consoleMessages.DisplayMessage(_START_DEPOSIT);
 
-					int tempDepositValue = int.Parse(inputedDeposit);
-					
-					if (tempDepositValue < 100 || tempDepositValue > 5000)
+				// Regesters player deposit sum
+				while (player.GetDeposit() == 0) 
+				{
+					string inputedDeposit = Console.ReadLine();
+
+					// Only Integer values between 100 and 5000 is allowed
+					if (!Regex.IsMatch(inputedDeposit, integerPattern) ||
+						!int.TryParse(inputedDeposit, out int tempDepositValue) ||
+						tempDepositValue < 100 || tempDepositValue > 5000)
 					{
-						Console.WriteLine("Only integer values between 100 and 5000 are permited!");
+						consoleMessages.DisplayMessage(_DEPOSIT_ERROR);
 					}
-					
+					else
+					{
+						player.SetDeposit(tempDepositValue);
+					}
 				}
+
+				// Displays current balance to player
+				consoleMessages.DisplayMessage(_CURRENT_BALANCE, player.GetDeposit());
+
 				GameRound(playerDice, npcDice);
 			}
 			
