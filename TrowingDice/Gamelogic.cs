@@ -20,16 +20,22 @@ namespace TrowingDice
 		public Gamelogic() 
 		{
 			player = new Player();
-			playerDice = new Dice[2];
-			npcDice = new Dice[2];
 
-			playAnotherGame = false;
+			playerDice = new Dice[2];
+			playerDice[0] = new Dice();
+			playerDice[1] = new Dice();
+
+			npcDice = new Dice[2];
+			npcDice[0] = new Dice();
+			npcDice[1] = new Dice();		
+			
+			playAnotherGame = true;
 
 
 
 			while (playAnotherGame) 
 			{
-				
+				GameRound(playerDice, npcDice);
 			}
 			
 			// when this part is reached END game (exit program).
@@ -40,15 +46,32 @@ namespace TrowingDice
 		// Will handles a single round of dice throws 
 		private bool GameRound(Dice[] playerDice, Dice[] npcDice)
 		{
+			int playerHighest = 0;
+			int npcHighest = 0; 
 
-			ThrowDiceSet(playerDice);
-			ThrowDiceSet(npcDice);
+			while (playerHighest == npcHighest) 
+			{
+				ThrowDiceSet(playerDice);
+				ThrowDiceSet(npcDice);
 
-			// test the trow results 
-			foreach (Dice dice in playerDice) { Console.WriteLine(dice.DiceValue); }
-			foreach (Dice dice in npcDice) { Console.WriteLine(dice.DiceValue); }
+				playerHighest = maxDice(playerDice);
+				npcHighest = maxDice(npcDice);
+
+				// Player won
+				if (playerHighest > npcHighest) { Console.WriteLine("Player won!"); return true; }
+				// Npc won
+				else if (playerHighest < npcHighest) { Console.WriteLine("Npc won!"); return false; }
+				// It was a draw, another throw will be conducted.
+				else { Console.WriteLine("It was a draw, throw again!"); }
+			}
 
 			return true; // depends on who wins 
+		}
+
+		// Returns highest die value of throw
+		private int maxDice(Dice[] dices)
+		{
+			return int.Max(dices[0].DiceValue, dices[1].DiceValue);	
 		}
 
 		private Dice[] ThrowDiceSet(Dice[] dices)
