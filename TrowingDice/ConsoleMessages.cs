@@ -30,6 +30,8 @@ namespace TrowingDice
 			};
 		}
 
+
+		// creates the singleton instance 
 		public static ConsoleMessages Instance 
 		{ 
 			get 

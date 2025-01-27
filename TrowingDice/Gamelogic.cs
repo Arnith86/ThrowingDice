@@ -42,6 +42,9 @@ namespace TrowingDice
 				{3, 500}
 			};
 
+			// Index 1: player, Index 2: Npc
+			int[] roundWinCount = new int[] { 0, 0 };
+
 			player = new Player();
 
 			// Player and Npc dice hands
@@ -55,10 +58,12 @@ namespace TrowingDice
 			playAnotherGame = true;
 			betRegistered = false; 
 
+			// Displays welcome message 
 			consoleMessages.DisplayMessage(_WELCOME);
 
 			while (playAnotherGame) 
 			{
+				// Asks how much player wants to place in account
 				if (player.GetDeposit() == 0) consoleMessages.DisplayMessage(_START_DEPOSIT);
 
 				// Regesters player deposit sum
@@ -109,8 +114,20 @@ namespace TrowingDice
 
 					player.SetBet(tempBetValue);
 					player.SetDeposit(player.GetDeposit() - tempBetValue);
+
+					betRegistered = true;
 				}
-				GameRound(playerDice, npcDice);
+
+				// Will conduct new rounds untill either Player or Npc has two wins
+				do
+				{
+					// Registers winner of round 
+					if (GameRound(playerDice, npcDice)) roundWinCount[0]++;
+					else roundWinCount[1]++;
+
+				} while (!(roundWinCount[0] == 2) && !(roundWinCount[1] == 2));
+
+				
 			}
 			
 			// when this part is reached END game (exit program).
