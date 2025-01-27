@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Text.RegularExpressions;
 
 namespace TrowingDice
 {
@@ -14,11 +15,17 @@ namespace TrowingDice
 		Dice[] playerDice;
 		Dice[] npcDice;
 
-		bool playAnotherGame; 
+		bool playAnotherGame;
+
 
 		// This method will handel all game logic 
 		public Gamelogic() 
 		{
+
+			// Regex pattern, only positive integers
+			string integerPattern = @"^\d+$";
+
+
 			player = new Player();
 
 			playerDice = new Dice[2];
@@ -32,9 +39,28 @@ namespace TrowingDice
 			playAnotherGame = true;
 
 
-
 			while (playAnotherGame) 
 			{
+				if (player.getDeposit() == 0) 
+				{
+					Console.WriteLine("How much money do you want do deposit? \n " +
+										"5000kr is the upper limit! "); 
+					
+					string inputedDeposit = Console.ReadLine();
+					
+					if (!(Regex.IsMatch(inputedDeposit, integerPattern)))
+					{
+						Console.WriteLine("Only integer values between 100 and 5000 are permited!");
+					}
+
+					int tempDepositValue = int.Parse(inputedDeposit);
+					
+					if (tempDepositValue < 100 || tempDepositValue > 5000)
+					{
+						Console.WriteLine("Only integer values between 100 and 5000 are permited!");
+					}
+					
+				}
 				GameRound(playerDice, npcDice);
 			}
 			
