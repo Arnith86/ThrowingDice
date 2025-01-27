@@ -28,6 +28,18 @@ namespace TrowingDice
 			};
 		}
 
+		public static ConsoleMessages Instance 
+		{ 
+			get 
+			{
+				if (instance == null)
+				{
+					instance = new ConsoleMessages();
+				}
+				return instance; 
+			} 
+		}
+
 		// Retrives the desired message, if it exists.
 		public string GetMessage(string key)
 		{
