@@ -12,11 +12,9 @@ namespace ThrowingDice
 		static void Main(string[] args)
 		{
 			Gamelogic gamelogic = new Gamelogic();
-
-			Console.WriteLine("Hello, World!");
+			Console.ReadKey();
+			return; 
 		}
-
-	
 	}
 }
 

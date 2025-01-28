@@ -17,19 +17,27 @@ namespace TrowingDice
 		static string _CURRENT_BALANCE = "Current_Balance";
 		static string _START_BET = "Start_Bet";
 		static string _BET_ERROR_INT = "Bet_Error_Int";
+		static string _CURRENT_BET = "Current_Bet";
 		static string _BET_BALANCE_ERROR = "Bet_Balance_Error";
 		static string _NEW_THROW = "New_Throw"; 
 		static string _SHOW_DIE = "Show_Die";
+		static string _PLAYER_ROUND_WIN = "Player_Round_Win";
+		static string _NPC_ROUND_WIN = "Npc_Round_Win";
+		static string _PLAYER_GAME_WIN = "Player_Game_Win";
+		static string _NPC_GAME_WIN = "Npc_Game_Win";
+		static string _BUTTON_PRESS = "Button_Press";
+		static string _CONTINUE = "Continue";
+		static string _FOUNDS_ADDED = "Founds_Added";
+		static string _YES_NO_ERROR = "Yes_No_Error";
+		static string _END_GAME = "End_Game";
+
 
 		private Player player;
 
 		private Dice[] playerDice;
 		private Dice[] npcDice;
 
-		private bool playAnotherGame;
 		private bool betRegistered; 
-
-
 
 		// This method will handel all game logic 
 		public Gamelogic() 
@@ -38,6 +46,7 @@ namespace TrowingDice
 			
 			// Regex pattern, only positive integers
 			string integerPattern = @"^\d+$";
+			string oneTwoPattern = @"^[1-2]+$";
 			string oneTwoThreePattern = @"^[1-3]+$";
 
 			Dictionary<int, int> betValues = new Dictionary<int, int>
@@ -60,14 +69,19 @@ namespace TrowingDice
 			npcDice[0] = new Dice();
 			npcDice[1] = new Dice();		
 			
-			playAnotherGame = true;
 			betRegistered = false; 
 
 			// Displays welcome message 
 			consoleMessages.DisplayMessage(_WELCOME);
 
-			while (playAnotherGame) 
+			while (true) 
 			{
+				// Empties the console on new game
+				Console.Clear();
+				
+				// Shows current balance, on program start = 0, otherwise current balace.
+				consoleMessages.DisplayMessage(_CURRENT_BALANCE, player.GetDeposit());
+
 				// Asks how much player wants to place in account
 				if (player.GetDeposit() == 0) consoleMessages.DisplayMessage(_START_DEPOSIT);
 
@@ -89,7 +103,9 @@ namespace TrowingDice
 					}
 				}
 
+
 				// Displays current balance to player
+				Console.Clear();
 				consoleMessages.DisplayMessage(_CURRENT_BALANCE, player.GetDeposit());
 
 				// Register player bet
@@ -121,6 +137,13 @@ namespace TrowingDice
 					player.SetDeposit(player.GetDeposit() - tempBetValue);
 
 					betRegistered = true;
+					
+					// Displays current balance and bet to player
+					Console.Clear();
+					consoleMessages.DisplayMessage(_CURRENT_BALANCE, player.GetDeposit());
+					consoleMessages.DisplayMessage(_CURRENT_BET, player.GetBet());
+					
+
 				}
 
 				// Will conduct new rounds untill either Player or Npc has two wins
@@ -130,21 +153,88 @@ namespace TrowingDice
 					if (GameRound(playerDice, npcDice)) roundWinCount[0]++;
 					else roundWinCount[1]++;
 
-				} while (!(roundWinCount[0] == 2) && !(roundWinCount[1] == 2));
+					consoleMessages.DisplayGameStats(roundWinCount);
+					
+					// If game has not been won, force player to press button to proceed to next throw
+					// On press current account balance and chosen bet is displayed 
+					if (roundWinCount[0] != 2 && roundWinCount[1] != 2)
+					{
+						consoleMessages.DisplayMessage(_BUTTON_PRESS);
+						Console.ReadKey();
 
+						Console.Clear();
+						consoleMessages.DisplayMessage(_CURRENT_BALANCE, player.GetDeposit());
+						consoleMessages.DisplayMessage(_CURRENT_BET, player.GetBet());
+					}
+					else
+					{
+						// Player won current game
+						if (roundWinCount[0] == 2)
+						{
+							consoleMessages.DisplayMessage(_PLAYER_GAME_WIN);
+							
+							// Calculate and set the new account balance baseed on current bet 
+							int foundsAdded = player.GetBet() * 2;
+							player.SetDeposit(player.GetDeposit() + foundsAdded);
+
+							// Displays current balance and bet to player
+							consoleMessages.DisplayMessage(_FOUNDS_ADDED, foundsAdded);
+							consoleMessages.DisplayMessage(_CURRENT_BALANCE, player.GetDeposit());
+							
+						}
+						// Npc won the game
+						else
+						{
+							consoleMessages.DisplayMessage(_NPC_GAME_WIN);
+						}
+
+						// Player given the choice to continue or quit
+						consoleMessages.DisplayMessage(_CONTINUE);
+					} 
+					
+					// Enables regestering of a new bet 
+					betRegistered = false;
+
+				} while (!(roundWinCount[0] == 2) && !(roundWinCount[1] == 2));
+						
+				
+				bool yesNoRegistered = false;
+				string yesNo = "";
+
+				// End game choice registerd end error handeling
+				while (!yesNoRegistered) 
+				{
+					// Read player continue choice input
+					yesNo = Console.ReadLine();
+
+					if (!Regex.IsMatch(yesNo, oneTwoPattern))
+					{
+						consoleMessages.DisplayMessage(_YES_NO_ERROR);
+						continue;
+					}
+					
+					yesNoRegistered = true;
+				}
+				
 				roundWinCount[0] = 0;
 				roundWinCount[1] = 0;
-			}
-			
-			// when this part is reached END game (exit program).
 
+
+				// yes (1) was chosen a new game loop is started
+				// no (2) breaks out of the loop and exits the game.
+				if (yesNo == "2") 
+				{
+					consoleMessages.DisplayMessage(_END_GAME);
+					break; 
+				}
+
+			}
 		}
 
 
-		// Will handles a single round of dice throws 
+		// Handles a single round of dice throws 
 		private bool GameRound(Dice[] playerDice, Dice[] npcDice)
 		{
-			bool[] numberOfDraws = new bool[2];
 			int playerHighest = 0;
 			int npcHighest = 0; 
 
@@ -152,12 +242,6 @@ namespace TrowingDice
 			{
 				ThrowDiceSet(playerDice);
 				ThrowDiceSet(npcDice);
-
-				// Here for testing reasons 
-				//playerDice[0].DiceValue = 6;
-				//npcDice[0].DiceValue = 6;
-				//playerDice[1].DiceValue = 6;
-				//npcDice[1].DiceValue = 6;
 
 				playerDice = SorByDescending(playerDice);
 				npcDice = SorByDescending(npcDice);
@@ -180,6 +264,7 @@ namespace TrowingDice
 					continue;
 					
 				}
+
 				// Highest valued dice of both players equal, use the other die
 				else if (playerDice[0].DiceValue == npcDice[0].DiceValue) 
 				{
@@ -187,27 +272,26 @@ namespace TrowingDice
 					npcHighest = npcDice[1].DiceValue;
 				}
 
-
-				/// TODO: make sure messages are retrived from ConsoleMessages
-
 				// Player won
-				if (playerHighest > npcHighest) { Console.WriteLine("Player won!"); return true; }
-				// Npc won
-				else if (playerHighest < npcHighest) { Console.WriteLine("Npc won!"); return false; }
-				// It was a draw, another throw will be conducted.
-				else { Console.WriteLine("It was a draw, throw again!"); }
+				if (playerHighest > npcHighest) 
+				{ 
+					consoleMessages.DisplayMessage(_PLAYER_ROUND_WIN); 
+					return true; 
+				}
 			}
 
-			return true; // depends on who wins 
+			// Npc won
+			consoleMessages.DisplayMessage(_NPC_ROUND_WIN);
+			return false;
 		}
 
 		// Sort the array with highest valued element first 
 		private Dice[] SorByDescending(Dice[] dices)
 		{
 			return dices.OrderByDescending(n => n.DiceValue).ToArray();
-			//return int.Max(dices[0].DiceValue, dices[1].DiceValue);	
 		}
 
+		// Throws both dices 
 		private Dice[] ThrowDiceSet(Dice[] dices)
 		{
 			foreach (Dice dice in dices)
