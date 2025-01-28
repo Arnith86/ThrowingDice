@@ -9,27 +9,32 @@ namespace TrowingDice
 {
 	class Gamelogic
 	{
-		string _WELCOME = "Welcome";
-		string _START_DEPOSIT = "Start_Deposit";
-		string _DEPOSIT_ERROR = "Deposit_Error";
-		string _CURRENT_BALANCE = "Current_Balance";
-		string _START_BET = "Start_Bet";
-		string _BET_ERROR_INT = "Bet_Error_Int";
-		string _BET_BALANCE_ERROR_ = "Bet_Balance_Error";
+		ConsoleMessages consoleMessages;
 
-		Player player;
+		static string _WELCOME = "Welcome";
+		static string _START_DEPOSIT = "Start_Deposit";
+		static string _DEPOSIT_ERROR = "Deposit_Error";
+		static string _CURRENT_BALANCE = "Current_Balance";
+		static string _START_BET = "Start_Bet";
+		static string _BET_ERROR_INT = "Bet_Error_Int";
+		static string _BET_BALANCE_ERROR = "Bet_Balance_Error";
+		static string _NEW_THROW = "New_Throw"; 
+		static string _SHOW_DIE = "Show_Die";
 
-		Dice[] playerDice;
-		Dice[] npcDice;
+		private Player player;
 
-		bool playAnotherGame;
-		bool betRegistered; 
+		private Dice[] playerDice;
+		private Dice[] npcDice;
+
+		private bool playAnotherGame;
+		private bool betRegistered; 
+
 
 
 		// This method will handel all game logic 
 		public Gamelogic() 
 		{
-			ConsoleMessages consoleMessages = ConsoleMessages.Instance;
+			consoleMessages = ConsoleMessages.Instance;
 			
 			// Regex pattern, only positive integers
 			string integerPattern = @"^\d+$";
@@ -108,7 +113,7 @@ namespace TrowingDice
 					// Bet exceeds current founds 
 					if (tempBetValue > player.GetDeposit())
 					{
-						consoleMessages.DisplayMessage(_BET_BALANCE_ERROR_);
+						consoleMessages.DisplayMessage(_BET_BALANCE_ERROR);
 						continue;
 					}
 
@@ -127,7 +132,8 @@ namespace TrowingDice
 
 				} while (!(roundWinCount[0] == 2) && !(roundWinCount[1] == 2));
 
-				
+				roundWinCount[0] = 0;
+				roundWinCount[1] = 0;
 			}
 			
 			// when this part is reached END game (exit program).
@@ -138,6 +144,7 @@ namespace TrowingDice
 		// Will handles a single round of dice throws 
 		private bool GameRound(Dice[] playerDice, Dice[] npcDice)
 		{
+			bool[] numberOfDraws = new bool[2];
 			int playerHighest = 0;
 			int npcHighest = 0; 
 
@@ -146,8 +153,42 @@ namespace TrowingDice
 				ThrowDiceSet(playerDice);
 				ThrowDiceSet(npcDice);
 
-				playerHighest = maxDice(playerDice);
-				npcHighest = maxDice(npcDice);
+				// Here for testing reasons 
+				//playerDice[0].DiceValue = 6;
+				//npcDice[0].DiceValue = 6;
+				//playerDice[1].DiceValue = 6;
+				//npcDice[1].DiceValue = 6;
+
+				playerDice = SorByDescending(playerDice);
+				npcDice = SorByDescending(npcDice);
+
+				// Present results
+				consoleMessages.DisplayMessage(_SHOW_DIE);
+				consoleMessages.DisplayDieResults(playerDice, npcDice);
+
+				playerHighest = playerDice[0].DiceValue;
+				npcHighest = npcDice[0].DiceValue;
+
+				// Handles instances where highest dice or all pairs are equal
+				if (playerDice[0].DiceValue == npcDice[0].DiceValue && 
+					playerDice[1].DiceValue == npcDice[1].DiceValue) 
+				{
+					// Both pair of dice are equal, perform a new throw
+					consoleMessages.DisplayMessage(_NEW_THROW);
+					// wait for buttonpress 
+					Console.ReadKey();
+					continue;
+					
+				}
+				// Highest valued dice of both players equal, use the other die
+				else if (playerDice[0].DiceValue == npcDice[0].DiceValue) 
+				{
+					playerHighest = playerDice[1].DiceValue;
+					npcHighest = npcDice[1].DiceValue;
+				}
+
+
+				/// TODO: make sure messages are retrived from ConsoleMessages
 
 				// Player won
 				if (playerHighest > npcHighest) { Console.WriteLine("Player won!"); return true; }
@@ -160,10 +201,11 @@ namespace TrowingDice
 			return true; // depends on who wins 
 		}
 
-		// Returns highest die value of throw
-		private int maxDice(Dice[] dices)
+		// Sort the array with highest valued element first 
+		private Dice[] SorByDescending(Dice[] dices)
 		{
-			return int.Max(dices[0].DiceValue, dices[1].DiceValue);	
+			return dices.OrderByDescending(n => n.DiceValue).ToArray();
+			//return int.Max(dices[0].DiceValue, dices[1].DiceValue);	
 		}
 
 		private Dice[] ThrowDiceSet(Dice[] dices)

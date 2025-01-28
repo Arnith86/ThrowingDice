@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+
 namespace TrowingDice
 {
 	/** 
@@ -26,7 +27,8 @@ namespace TrowingDice
 				{ "Current_Balance", "kr in account! \n" },
 				{ "Start_Bet", "How much will you bet? \n 1: 100kr \n 2: 300kr \n 3: 500kr" },
 				{ "Bet_Error_Int", "Provide an integer between 1 and 3!" },
-				{ "Bet_Balance_Error", "Bet exceeds your current funds. Please try again" }
+				{ "Show_Die", "\nResults of throw:" },
+				{ "New_Throw", "This round ended in a draw. Press a button to throw the dices again!\n" }
 			};
 		}
 
@@ -65,6 +67,12 @@ namespace TrowingDice
 			{
 				Console.WriteLine(value + GetMessage(key));
 			}
+		}
+
+		public void DisplayDieResults(Dice[] playerDice, Dice[] npcDice)
+		{
+			Console.WriteLine($"Player: {playerDice[0].DiceValue} {playerDice[1].DiceValue}");
+			Console.WriteLine($"Npc: {npcDice[0].DiceValue} {npcDice[1].DiceValue}");
 		}
 	}
 }
