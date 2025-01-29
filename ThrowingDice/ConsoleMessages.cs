@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 
-namespace TrowingDice
+namespace ThrowingDice
 {
 	/** 
 	 * This class contains all the console messages used in the program 

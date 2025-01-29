@@ -1,6 +1,6 @@
 ﻿using System;
 using System.IO;
-using TrowingDice;
+
 
 /**	
  *  This is remade version of my first ever programing assignment.
